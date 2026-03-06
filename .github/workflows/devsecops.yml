@@ -11,11 +11,15 @@ jobs:
       - name: Scan des dépendances (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs' # Scan du système de fichiers pour requirements.txt
+          scan-type: 'fs'
           scan-ref: '.'
           format: 'table'
           output: 'rapport-dependances.txt'
           severity: 'CRITICAL,HIGH'
+
+      # NOUVELLE ÉTAPE : Affichage dans la console
+      - name: Affichage du rapport Dépendances dans les logs
+        run: cat rapport-dependances.txt
 
       - name: Archivage du rapport de dépendances
         uses: actions/upload-artifact@v4
@@ -33,10 +37,13 @@ jobs:
       - name: Scan du Dockerfile (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'config' # 'config' détecte les mauvaises pratiques dans les Dockerfiles
-          hide-progress: false
+          scan-type: 'config'
           format: 'table'
           output: 'rapport-dockerfile.txt'
+
+      # NOUVELLE ÉTAPE : Affichage dans la console
+      - name: Affichage du rapport Dockerfile dans les logs
+        run: cat rapport-dockerfile.txt
 
       - name: Archivage du rapport Dockerfile
         uses: actions/upload-artifact@v4
