@@ -9,10 +9,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Scan des dépendances (Trivy)
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: 'requirements.txt'
+          scan-ref: '.'
           format: 'table'
           output: 'rapport-dependances.txt'
           severity: 'CRITICAL,HIGH'
