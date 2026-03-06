@@ -1,0 +1,53 @@
+name: Automatisation des tests DevSecOps
+on: push
+
+jobs:
+  Dependances:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Scan des dépendances (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs' # Scan du système de fichiers pour requirements.txt
+          scan-ref: '.'
+          format: 'table'
+          output: 'rapport-dependances.txt'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Archivage du rapport de dépendances
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-dependances
+          path: rapport-dependances.txt
+
+  Dockerfile:
+    runs-on: ubuntu-latest
+    needs: Dependances
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Scan du Dockerfile (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config' # 'config' détecte les mauvaises pratiques dans les Dockerfiles
+          hide-progress: false
+          format: 'table'
+          output: 'rapport-dockerfile.txt'
+
+      - name: Archivage du rapport Dockerfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-dockerfile
+          path: rapport-dockerfile.txt
+
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Dockerfile
+    steps:
+      - name: Deploy
+        run: |
+          echo "Rien à faire ici. Votre application est prête à être déployée"
